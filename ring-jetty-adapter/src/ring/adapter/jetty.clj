@@ -14,12 +14,13 @@
   [handler]
   (proxy [AbstractHandler] []
     (handle [_ ^Request base-request request response]
-      (let [request-map  (servlet/build-request-map request)
-            response-map (handler request-map)]
-        (when response-map
-          (.setCharacterEncoding response "UTF-8")
-          (servlet/update-servlet-response response response-map)
-          (.setHandled base-request true))))))
+            (let [request-map  (merge (servlet/build-request-map request)
+                                      {:servlet-request request})
+                  response-map (handler request-map)]
+              (when response-map
+                (.setCharacterEncoding response "UTF-8")
+                (servlet/update-servlet-response response response-map)
+                (.setHandled base-request true))))))
 
 (defn- ssl-context-factory
   "Creates a new SslContextFactory instance from a map of options."
